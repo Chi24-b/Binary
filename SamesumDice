@@ -1,0 +1,51 @@
+// Problem 2: Dice Turning Solution
+class DiceSolution {
+    public int solution(int[] A, int[] B) {
+        int sumA = 0, sumB = 0;
+        for (int a : A) sumA += a;
+        for (int b : B) sumB += b;
+        
+        int diff = sumA - sumB;
+        if (diff == 0) return 0;
+        
+        // Create array of possible gains from turning dice
+        int[] gains = new int[A.length + B.length];
+        int index = 0;
+        
+        if (diff > 0) {
+            // Need to reduce A or increase B
+            for (int a : A) {
+                if (a > 1) gains[index++] = a - 1; // Turn A dice down
+            }
+            for (int b : B) {
+                if (b < 6) gains[index++] = 6 - b; // Turn B dice up
+            }
+        } else {
+            // Need to increase A or reduce B
+            diff = -diff;
+            for (int a : A) {
+                if (a < 6) gains[index++] = 6 - a; // Turn A dice up
+            }
+            for (int b : B) {
+                if (b > 1) gains[index++] = b - 1; // Turn B dice down
+            }
+        }
+        
+        // Sort gains in descending order
+        java.util.Arrays.sort(gains, 0, index);
+        for (int i = 0; i < index / 2; i++) {
+            int temp = gains[i];
+            gains[i] = gains[index - 1 - i];
+            gains[index - 1 - i] = temp;
+        }
+        
+        // Greedily use the largest gains
+        int turns = 0;
+        for (int i = 0; i < index && diff > 0; i++) {
+            diff -= gains[i];
+            turns++;
+        }
+        
+        return diff <= 0 ? turns : -1;
+    }
+}
